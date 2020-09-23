@@ -17,8 +17,8 @@ char *dbgsprint(uint32 code, ...);
 	rw::Error _e;                   \
 	_e.plugin = PLUGIN_ID;      \
 	_e.code = _ERRORCODE ecode; \
-	fprintf(stderr, "%s:%d: ", __FILE__, __LINE__); \
-	fprintf(stderr, "%s\n", rw::dbgsprint ecode);       \
+	printf("%s:%d: ", __FILE__, __LINE__); \
+	printf("%s\n", rw::dbgsprint ecode);       \
 	rw::setError(&_e);              \
 }while(0)
 

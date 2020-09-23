@@ -11,12 +11,6 @@
 #include "../rwpipeline.h"
 #include "../rwobjects.h"
 #ifdef RW_OPENGL
-#include <GL/glew.h>
-#ifdef LIBRW_SDL2
-#include <SDL.h>
-#else
-#include <GLFW/glfw3.h>
-#endif
 #include "rwgl3.h"
 #include "rwgl3shader.h"
 #include "rwgl3impl.h"
@@ -1267,6 +1261,7 @@ openSDL2(EngineOpenParams *openparams)
 	}
 	ctx = SDL_GL_CreateContext(win);
 
+#ifndef LIBRW_GLAD
 	/* Init GLEW */
 	glewExperimental = GL_TRUE;
 	status = glewInit();
@@ -1284,6 +1279,22 @@ openSDL2(EngineOpenParams *openparams)
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 		return 0;
 	}
+#else
+	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+        	RWERROR((ERR_ENGINEOPEN, "gladLoadGLLoader failed"));
+        	SDL_GL_DeleteContext(ctx);
+        	SDL_DestroyWindow(win);
+        	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+        	return 0;
+	}
+	if(!GLAD_GL_VERSION_3_3) {
+		RWERROR((ERR_VERSION, "OpenGL 3.3 needed"));
+		SDL_GL_DeleteContext(ctx);
+		SDL_DestroyWindow(win);
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+		return 0;
+	}
+#endif
 	glGlobals.window = win;
 	glGlobals.glcontext = ctx;
 	*openparams->window = win;
@@ -1326,6 +1337,7 @@ addVideoMode(const GLFWvidmode *mode)
 
 static void
 makeVideoModeList(void)
+#ifndef __SWITCH__
 {
 	int i, num;
 	const GLFWvidmode *modes;
@@ -1349,6 +1361,32 @@ makeVideoModeList(void)
 		for(glGlobals.modes[i].depth = 1; glGlobals.modes[i].depth < num; glGlobals.modes[i].depth <<= 1);
 	}
 }
+#else
+// stub video modes manually: 1080p and 720p
+{
+	glGlobals.modes = rwNewT(DisplayMode, 2, ID_DRIVER | MEMDUR_EVENT);
+
+	glGlobals.modes[0].mode.redBits = 8;
+	glGlobals.modes[0].mode.greenBits = 8;
+	glGlobals.modes[0].mode.blueBits = 8;
+	glGlobals.modes[0].mode.width = 1280;
+	glGlobals.modes[0].mode.height = 720;
+	glGlobals.modes[0].mode.refreshRate = 60;
+	glGlobals.modes[0].depth = 32;
+	glGlobals.modes[0].flags = VIDEOMODEEXCLUSIVE;
+
+	glGlobals.modes[1].mode.redBits = 8;
+	glGlobals.modes[1].mode.greenBits = 8;
+	glGlobals.modes[1].mode.blueBits = 8;
+	glGlobals.modes[1].mode.width = 1920;
+	glGlobals.modes[1].mode.height = 1080;
+	glGlobals.modes[1].mode.refreshRate = 60;
+	glGlobals.modes[1].depth = 32;
+	glGlobals.modes[1].flags = VIDEOMODEEXCLUSIVE;
+
+	glGlobals.numModes = 2;
+}
+#endif
 
 static int
 openGLFW(EngineOpenParams *openparams)
@@ -1380,7 +1418,12 @@ openGLFW(EngineOpenParams *openparams)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif
 
+	#ifndef __SWITCH__
 	glGlobals.monitor = glfwGetMonitors(&glGlobals.numMonitors)[0];
+	#else
+	glGlobals.monitor = glfwGetPrimaryMonitor();
+	glGlobals.numMonitors = 1;
+	#endif
 
 	makeVideoModeList();
 
@@ -1424,8 +1467,8 @@ startGLFW(void)
 		return 0;
 	}
 	glfwMakeContextCurrent(win);
-printf("version %s\n", glGetString(GL_VERSION));
 
+#ifndef LIBRW_GLAD
 	/* Init GLEW */
 	glewExperimental = GL_TRUE;
 	status = glewInit();
@@ -1439,6 +1482,26 @@ printf("version %s\n", glGetString(GL_VERSION));
 		glfwDestroyWindow(win);
 		return 0;
 	}
+#else
+	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+		RWERROR((ERR_GENERAL, "gladLoadGLLoader failed"));
+		glfwDestroyWindow(win);
+		return 0;
+	}
+
+	/*if(!GLAD_GL_VERSION_3_3) {
+		RWERROR((ERR_GENERAL, "OpenGL 3.3 needed"));
+		glfwDestroyWindow(win);
+		return 0;
+	}*/
+#endif
+	printf("version %s\n", glGetString(GL_VERSION));
+
+	printf("GL_VENDOR: %s\n", glGetString(GL_VENDOR));
+	printf("GL_RENDERER: %s\n", glGetString(GL_RENDERER));
+	printf("GL_VERSION: %s\n", glGetString(GL_VERSION));
+	printf("GL_EXTENSIONS: %s\n", glGetString(GL_EXTENSIONS));
+
 	glGlobals.window = win;
 	*glGlobals.pWindow = win;
 	glGlobals.presentWidth = 0;
@@ -1610,18 +1673,31 @@ deviceSystemGLFW(DeviceReq req, void *arg, int32 n)
 		return glGlobals.currentMonitor;
 
 	case DEVICESETSUBSYSTEM:
+		#ifndef __SWITCH__
 		monitors = glfwGetMonitors(&glGlobals.numMonitors);
+		#endif
 		if(n >= glGlobals.numMonitors)
 			return 0;
+		#ifndef __SWITCH__
 		glGlobals.currentMonitor = n;
 		glGlobals.monitor = monitors[glGlobals.currentMonitor];
+		#else
+		glGlobals.currentMonitor = 0;
+		glGlobals.monitor = glfwGetPrimaryMonitor();
+		#endif
 		return 1;
 
 	case DEVICEGETSUBSSYSTEMINFO:
+		#ifndef __SWITCH__
 		monitors = glfwGetMonitors(&glGlobals.numMonitors);
+		#endif
 		if(n >= glGlobals.numMonitors)
 			return 0;
+		#ifndef __SWITCH__
 		strncpy(((SubSystemInfo*)arg)->name, glfwGetMonitorName(monitors[n]), sizeof(SubSystemInfo::name));
+		#else
+		strncpy(((SubSystemInfo*)arg)->name, "Nintendo Switch Screen Stub", sizeof(SubSystemInfo::name));
+		#endif
 		return 1;
 
 

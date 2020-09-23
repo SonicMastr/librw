@@ -1,5 +1,15 @@
 #ifdef RW_GL3
+
+#ifdef __SWITCH__ // switch must be included early for some defines that are needed later on for opengl stuff
+#include <switch.h>
+#endif
+
+#ifndef LIBRW_GLAD
 #include <GL/glew.h>
+#else
+#include <glad/glad.h>
+#endif
+
 #ifdef LIBRW_SDL2
 #include <SDL.h>
 #else
