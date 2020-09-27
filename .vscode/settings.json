@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.inc": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "*.err": "cpp"
     }
 }

@@ -26,3 +26,7 @@ Install [DolceSDK](https://github.com/dolcesdk/doc)
 ```make -j4```
 
 Dolce Support for required libraries coming soon
+
+#TODO
+
+GLFW port for ease of use. Needed for seemless integration with RE3 without writing even more code to destroy it.
