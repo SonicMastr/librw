@@ -21,8 +21,10 @@ $(TARGET).a: $(OBJS)
 	$(AR) -rc $@ $^
 	
 clean:
-	@rm -rf $(TARGET).a $(TARGET).elf $(OBJS)
+	@rm -rf $(TARGET).a $(OBJS)
 	
 install: $(TARGET).a
 	@mkdir -p $(DOLCESDK)/$(PREFIX)/lib/
 	cp $(TARGET).a $(DOLCESDK)/$(PREFIX)/lib/
+	@mkdir -p $(DOLCESDK)/$(PREFIX)/include/
+	cp rw.h $(DOLCESDK)/$(PREFIX)/include/
