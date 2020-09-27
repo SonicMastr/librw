@@ -1,5 +1,7 @@
-librw
+librw-Vita
 =====
+
+librw Vita port using the NX port as a base
 
 This library is supposed to be a re-implementation of RenderWare graphics,
 or a good part of it anyway.
