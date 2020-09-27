@@ -33,3 +33,4 @@ librw.VC.VC.opendb
 *.exe
 *.out
 *.app
+rwfixed.h
