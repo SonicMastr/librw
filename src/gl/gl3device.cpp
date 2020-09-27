@@ -110,7 +110,9 @@ const char *shaderDecl310es =
 
 #ifdef RW_GLES3
 const char *shaderDecl = shaderDecl310es;
-#elif defined RW_GLES2
+#elif RW_GLES2 && VITA  // Using CG. We don't need this
+const char *shaderDecl = "";
+#elif RW_GLES2
 const char *shaderDecl = shaderDecl100es;
 #else
 const char *shaderDecl = shaderDecl330;
@@ -1587,7 +1589,10 @@ initOpenGL(void)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 #endif
 
-#ifdef RW_GLES2
+#ifdef RW_GLES2 && VITA // CG Shaders
+#include "vita_shaders/default_vs_vita.inc"
+#include "vita_shaders/simple_fs_vita.inc"
+#elif RW_GLES2
 #include "gl2_shaders/default_vs_gl2.inc"
 #include "gl2_shaders/simple_fs_gl2.inc"
 #else

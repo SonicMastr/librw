@@ -173,7 +173,9 @@ matfxOpen(void *o, int32, int32)
 {
 	matFXGlobals.pipelines[PLATFORM_GL3] = makeMatFXPipeline();
 
-#ifdef RW_GLES2
+#ifdef RW_GLES2 && VITA // CG Shaders
+#include "vita_shaders/matfx_vita.inc"
+#elif RW_GLES2
 #include "gl2_shaders/matfx_gl2.inc"
 #else
 #include "shaders/matfx_gl3.inc"

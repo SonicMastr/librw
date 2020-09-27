@@ -55,7 +55,10 @@ openIm2D(void)
 {
 	u_xform = registerUniform("u_xform");
 
-#ifdef RW_GLES2
+#ifdef RW_GLES2 && VITA // CG Shaders
+#include "vita_shaders/im2d_vita.inc"
+#include "vita_shaders/simple_fs_vita.inc"
+#elif RW_GLES2
 #include "gl2_shaders/im2d_gl2.inc"
 #include "gl2_shaders/simple_fs_gl2.inc"
 #else
@@ -215,7 +218,10 @@ static int32 num3DVertices;	// not actually needed here
 void
 openIm3D(void)
 {
-#ifdef RW_GLES2
+#ifdef RW_GLES2 && VITA // CG Shaders
+#include "vita_shaders/im3d_vita.inc"
+#include "vita_shaders/simple_fs_vita.inc"
+#elif
 #include "gl2_shaders/im3d_gl2.inc"
 #include "gl2_shaders/simple_fs_gl2.inc"
 #else

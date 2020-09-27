@@ -16,7 +16,10 @@
 namespace rw {
 namespace gl3 {
 
-#ifdef RW_GLES2
+#ifdef RW_GLES2 && VITA
+#include "vita_shaders/header_vs.inc"
+#include "vita_shaders/header_fs.inc"
+#elif RW_GLES2
 #include "gl2_shaders/header_vs.inc"
 #include "gl2_shaders/header_fs.inc"
 #else
@@ -51,6 +54,7 @@ findUniform(const char *name)
 	return -1;
 }
 
+#ifdef RW_GL_USE_UBOS
 int32
 registerBlock(const char *name)
 {
@@ -73,6 +77,7 @@ findBlock(const char *name)
 			return i;
 	return -1;
 }
+#endif
 
 Shader *currentShader;
 
@@ -218,6 +223,7 @@ Shader::create(const char **vsrc, const char **fsrc)
 	printf("\n");
 #endif
 
+#ifdef RW_GL_USE_UBOS
 	// set uniform block binding
 	for(i = 0; i < uniformRegistry.numBlocks; i++){
 		int idx = glGetUniformBlockIndex(program,
@@ -225,6 +231,7 @@ Shader::create(const char **vsrc, const char **fsrc)
 		if(idx >= 0)
 			glUniformBlockBinding(program, idx, i);
 	}
+#endif // GLES2 doesn't support this, and we're using the GLES2 Version
 
 	// query uniform locations
 	sh->program = program;

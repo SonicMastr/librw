@@ -1,0 +1,33 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "DOLCE",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "VITA=1",
+                "LIBRW_SDL2=1",
+                "RW_GLES2=1",
+                "RW_GL3=1",
+                "RW_EGL=1"
+            ],
+            "compilerPath": "/usr/local/dolcesdk/bin/arm-dolce-eabi-gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}

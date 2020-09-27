@@ -5,13 +5,17 @@
 #endif
 
 #ifndef LIBRW_GLAD
+#ifdef VITA
+#include <GLES2/gl2.h>
+#else
 #include <GL/glew.h>
+#endif
 #else
 #include <glad/glad.h>
 #endif
 
 #ifdef LIBRW_SDL2
-#include <SDL.h>
+#include <SDL/SDL.h>
 #else
 #include <GLFW/glfw3.h>
 #endif
