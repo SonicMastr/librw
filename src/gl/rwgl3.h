@@ -15,7 +15,7 @@
 #endif
 
 #ifdef LIBRW_SDL2
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #else
 #include <GLFW/glfw3.h>
 #endif
@@ -29,6 +29,10 @@ struct EngineOpenParams
 #ifdef LIBRW_SDL2
 	SDL_Window **window;
 	bool32 fullscreen;
+#ifdef VITA
+	#define GL_GLEXT_PROTOTYPES 1
+	#include <SDL2/SDL_opengles2.h>
+#endif
 #else
 	GLFWwindow **window;
 #endif

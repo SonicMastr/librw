@@ -14,10 +14,14 @@
 #include "rwwdgl.h"
 
 #ifdef RW_OPENGL
+#ifndef VITA
 #ifndef LIBRW_GLAD
 #include <GL/glew.h>
 #else
 #include <glad/glad.h>
+#endif
+#else
+#include <GLES2/gl2.h>
 #endif
 #endif
 
@@ -837,7 +841,7 @@ Texture::upload(void)
 
 	static GLenum wrap[] = {
 		0, GL_REPEAT, GL_MIRRORED_REPEAT,
-		GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER
+		GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE
 	};
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
 		wrap[(this->filterAddressing >> 8) & 0xF]);

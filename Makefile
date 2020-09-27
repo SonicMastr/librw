@@ -1,152 +1,28 @@
-#---------------------------------------------------------------------------------
-.SUFFIXES:
-#---------------------------------------------------------------------------------
 
-ifeq ($(strip $(DEVKITPRO)),)
-$(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/devkitpro")
-endif
+TARGET          := librw
+SOURCES         := src src/d3d src/gl src/lodepng src/ps2
 
-include $(DEVKITPRO)/libnx/switch_rules
+CFILES   := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.c))
+ASMFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.S))
+CPPFILES :=	$(foreach dir,$(SOURCES), $(wildcard $(dir)/*.cpp))
+OBJS     := $(CFILES:.c=.o) $(ASMFILES:.S=.o) $(CPPFILES:.cpp=.o)
 
-#---------------------------------------------------------------------------------
-# TARGET is the name of the output
-# SOURCES is a list of directories containing source code
-# DATA is a list of directories containing data files
-# INCLUDES is a list of directories containing header files
-#---------------------------------------------------------------------------------
-#TARGET		:=	$(notdir $(CURDIR))
-TARGET		:=	rw
-SOURCES		:=	src src/d3d src/gl src/lodepng src/ps2
-DATA		:=	data
-INCLUDES	:=
-#PORTLIBS	:= 
+PREFIX  = arm-dolce-eabi
+CC      = $(PREFIX)-gcc
+CXX		= $(PREFIX)-g++
+AR      = $(PREFIX)-gcc-ar
+CFLAGS  = -g -Wl,-q -O3 -ffast-math -mtune=cortex-a9 -mfpu=neon -ftree-vectorize -DVITA -DDEBUG -DRW_GL3 -DRW_GLES2 -DLIBRW_SDL2
+CXXFLAGS = $(CFLAGS)
+ASFLAGS = $(CFLAGS)
 
-#---------------------------------------------------------------------------------
-# options for code generation
-#---------------------------------------------------------------------------------
-ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec
+all: $(TARGET).a
 
-CFLAGS	:=	-g \
-			-ffunction-sections \
-			-fdata-sections \
-			$(ARCH) \
-			$(BUILD_CFLAGS)
-
-CFLAGS	+=	$(INCLUDE) -DSWITCH -D__SWITCH__ -DDEBUG -DRW_GL3 -DLIBRW_GLAD
-
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
-
-ASFLAGS	:=	-g $(ARCH)
-
-LIBS	:=  
-
-#---------------------------------------------------------------------------------
-# list of directories containing libraries, this must be the top level containing
-# include and lib
-#---------------------------------------------------------------------------------
-LIBDIRS := $(PORTLIBS) $(LIBNX)
-
-#---------------------------------------------------------------------------------
-# no real need to edit anything past this point unless you need to add additional
-# rules for different file extensions
-#---------------------------------------------------------------------------------
-ifneq ($(BUILD),$(notdir $(CURDIR)))
-#---------------------------------------------------------------------------------
-
-export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
-			$(foreach dir,$(DATA),$(CURDIR)/$(dir))
-
-CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
-SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
-
-#---------------------------------------------------------------------------------
-# use CXX for linking C++ projects, CC for standard C
-#---------------------------------------------------------------------------------
-ifeq ($(strip $(CPPFILES)),)
-#---------------------------------------------------------------------------------
-	export LD	:=	$(CC)
-#---------------------------------------------------------------------------------
-else
-#---------------------------------------------------------------------------------
-	export LD	:=	$(CXX)
-#---------------------------------------------------------------------------------
-endif
-#---------------------------------------------------------------------------------
-
-export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES))
-export OFILES_SRC	:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) #$(SFILES:.s=.o)
-export OFILES 	:=	$(OFILES_BIN) $(OFILES_SRC)
-export HFILES	:=	$(addsuffix .h,$(subst .,_,$(BINFILES)))
-
-export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
-			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-			-I$(CURDIR)/$(BUILD)
-
-.PHONY: clean all
-
-#---------------------------------------------------------------------------------
-all: lib/lib$(TARGET).a lib/lib$(TARGET)d.a
-
-lib:
-	@[ -d $@ ] || mkdir -p $@
-
-release:
-	@[ -d $@ ] || mkdir -p $@
-
-debug:
-	@[ -d $@ ] || mkdir -p $@
-
-lib/lib$(TARGET).a : lib release $(SOURCES) $(INCLUDES)
-	@$(MAKE) BUILD=release OUTPUT=$(CURDIR)/$@ \
-	BUILD_CFLAGS="-DNDEBUG=1 -O3" \
-	DEPSDIR=$(CURDIR)/release \
-	--no-print-directory -C release \
-	-f $(CURDIR)/Makefile
-
-lib/lib$(TARGET)d.a : lib debug $(SOURCES) $(INCLUDES)
-	@$(MAKE) BUILD=debug OUTPUT=$(CURDIR)/$@ \
-	BUILD_CFLAGS="-DDEBUG=1 -Og" \
-	DEPSDIR=$(CURDIR)/debug \
-	--no-print-directory -C debug \
-	-f $(CURDIR)/Makefile
-
-dist-bin: all
-	@tar --exclude=*~ -cjf lib$(TARGET).tar.bz2 include lib
-
-dist-src:
-	@tar --exclude=*~ -cjf lib$(TARGET)-src.tar.bz2 include source Makefile
-
-dist: dist-src dist-bin
-
-#---------------------------------------------------------------------------------
+$(TARGET).a: $(OBJS)
+	$(AR) -rc $@ $^
+	
 clean:
-	@echo clean ...
-	@rm -fr release debug lib *.bz2
-
-#---------------------------------------------------------------------------------
-else
-
-DEPENDS	:=	$(OFILES:.o=.d)
-
-#---------------------------------------------------------------------------------
-# main targets
-#---------------------------------------------------------------------------------
-$(OUTPUT)	:	$(OFILES)
-
-$(OFILES_SRC)	: $(HFILES)
-
-#---------------------------------------------------------------------------------
-%_bin.h %.bin.o	:	%.bin
-#---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	@$(bin2o)
-
-
--include $(DEPENDS)
-
-#---------------------------------------------------------------------------------------
-endif
-#---------------------------------------------------------------------------------------
-
+	@rm -rf $(TARGET).a $(TARGET).elf $(OBJS)
+	
+install: $(TARGET).a
+	@mkdir -p $(DOLCESDK)/$(PREFIX)/lib/
+	cp $(TARGET).a $(DOLCESDK)/$(PREFIX)/lib/

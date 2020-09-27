@@ -26,7 +26,7 @@ rasterCreateTexture(Raster *raster)
 	Gl3Raster *natras = PLUGINOFFSET(Gl3Raster, raster, nativeRasterOffset);
 	switch(raster->format & 0xF00){
 	case Raster::C8888:
-		natras->internalFormat = GL_RGBA8;
+		natras->internalFormat = GL_RGBA;
 		natras->format = GL_RGBA;
 		natras->type = GL_UNSIGNED_BYTE;
 		natras->hasAlpha = 1;
@@ -34,7 +34,7 @@ rasterCreateTexture(Raster *raster)
 		raster->depth = 32;
 		break;
 	case Raster::C888:
-		natras->internalFormat = GL_RGB8;
+		natras->internalFormat = GL_RGB;
 		natras->format = GL_RGB;
 		natras->type = GL_UNSIGNED_BYTE;
 		natras->hasAlpha = 0;
@@ -56,7 +56,7 @@ rasterCreateTexture(Raster *raster)
 
 #ifdef RW_GLES
 	// glReadPixels only supports GL_RGBA
-	natras->internalFormat = GL_RGBA8;
+	natras->internalFormat = GL_RGBA;
 	natras->format = GL_RGBA;
 	natras->type = GL_UNSIGNED_BYTE;
 	natras->bpp = 4;
@@ -89,7 +89,7 @@ rasterCreateCameraTexture(Raster *raster)
 	Gl3Raster *natras = PLUGINOFFSET(Gl3Raster, raster, nativeRasterOffset);
 	switch(raster->format & 0xF00){
 	case Raster::C8888:
-		natras->internalFormat = GL_RGBA8;
+		natras->internalFormat = GL_RGBA;
 		natras->format = GL_RGBA;
 		natras->type = GL_UNSIGNED_BYTE;
 		natras->hasAlpha = 1;
@@ -97,7 +97,7 @@ rasterCreateCameraTexture(Raster *raster)
 		break;
 	case Raster::C888:
 	default:
-		natras->internalFormat = GL_RGB8;
+		natras->internalFormat = GL_RGB;
 		natras->format = GL_RGB;
 		natras->type = GL_UNSIGNED_BYTE;
 		natras->hasAlpha = 0;

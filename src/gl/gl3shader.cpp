@@ -16,10 +16,10 @@
 namespace rw {
 namespace gl3 {
 
-#ifdef RW_GLES2 && VITA
+#if defined RW_GLES2 && defined VITA
 #include "vita_shaders/header_vs.inc"
 #include "vita_shaders/header_fs.inc"
-#elif RW_GLES2
+#elif defined RW_GLES2
 #include "gl2_shaders/header_vs.inc"
 #include "gl2_shaders/header_fs.inc"
 #else

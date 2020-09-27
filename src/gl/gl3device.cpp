@@ -439,7 +439,7 @@ static GLint filterConvMap_NoMIP[] = {
 
 static GLint addressConvMap[] = {
 	0, GL_REPEAT, GL_MIRRORED_REPEAT,
-	GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER
+	GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE
 };
 
 static void
@@ -1246,8 +1246,13 @@ openSDL2(EngineOpenParams *openparams)
 		return 0;
 	}
 	SDL_ClearHints();
+#ifdef VITA
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#else
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#endif
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -1263,6 +1268,7 @@ openSDL2(EngineOpenParams *openparams)
 	}
 	ctx = SDL_GL_CreateContext(win);
 
+#ifndef VITA
 #ifndef LIBRW_GLAD
 	/* Init GLEW */
 	glewExperimental = GL_TRUE;
@@ -1296,6 +1302,7 @@ openSDL2(EngineOpenParams *openparams)
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 		return 0;
 	}
+#endif
 #endif
 	glGlobals.window = win;
 	glGlobals.glcontext = ctx;
@@ -1589,10 +1596,10 @@ initOpenGL(void)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 #endif
 
-#ifdef RW_GLES2 && VITA // CG Shaders
+#if defined RW_GLES2 && defined VITA // CG Shaders
 #include "vita_shaders/default_vs_vita.inc"
 #include "vita_shaders/simple_fs_vita.inc"
-#elif RW_GLES2
+#elif defined RW_GLES2
 #include "gl2_shaders/default_vs_gl2.inc"
 #include "gl2_shaders/simple_fs_gl2.inc"
 #else
