@@ -1,0 +1,18 @@
+const char *im3d_vert_src =
+"void main(\n"
+"	float3 in_pos,\n"
+"	float4 in_color,\n"
+"	float2 in_tex0,\n"
+"	out float4 gl_Position : POSITION,\n"
+"	out float4 v_color : COLOR,\n"
+"	out float2 v_tex0 : TEXCOORD0,\n"
+"	out float v_fog : FOG\n"
+")\n"
+"{\n"
+"	float4 V = mul(u_world, float4(in_pos, 1.0));\n"
+"	float4 cV = mul(u_view, V);\n"
+"	gl_Position = mul(u_proj, cV);\n"
+"	v_color = in_color;\n"
+"	v_tex0 = in_tex0;\n"
+"	v_fog = DoFog(gl_Position.w);\n"
+"}\n";

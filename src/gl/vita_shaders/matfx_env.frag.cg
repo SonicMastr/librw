@@ -1,0 +1,30 @@
+void main(
+	float4 v_color : COLOR,
+	float2 v_tex0 : TEXCOORD0,
+	float2 v_tex1 : TEXCOORD1,
+	float v_fog : FOG,
+	uniform sampler2D tex0,
+	uniform sampler2D tex1,
+	uniform float2 u_fxparams,
+	uniform float4 u_colorClamp
+)
+{
+	float4 color;
+
+	float4 pass1 = v_color;
+	float4 envColor = max(pass1, u_colorClamp);
+	pass1 *= tex2D(tex0, float2(v_tex0.x, 1.0-v_tex0.y));
+
+	float4 pass2 = envColor*u_fxparams.x*tex2D(tex1, float2(v_tex1.x, 1.0-v_tex1.y));
+
+	pass1.rgb = lerp(u_fogColor.rgb, pass1.rgb, v_fog);
+	pass2.rgb = lerp(float3(0.0, 0.0, 0.0), pass2.rgb, v_fog);
+
+	float fba = max(pass1.a, u_fxparams.y);
+	color.rgb = pass1.rgb*pass1.a + pass2.rgb*fba;
+	color.a = pass1.a;
+
+	DoAlphaTest(color.a);
+
+	v_color = color;
+}
