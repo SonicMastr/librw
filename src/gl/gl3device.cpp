@@ -1476,7 +1476,7 @@ startGLFW(void)
 		return 0;
 	}
 	glfwMakeContextCurrent(win);
-
+#ifndef VITA
 #ifndef LIBRW_GLAD
 	/* Init GLEW */
 	glewExperimental = GL_TRUE;
@@ -1503,6 +1503,7 @@ startGLFW(void)
 		glfwDestroyWindow(win);
 		return 0;
 	}*/
+#endif
 #endif
 	printf("version %s\n", glGetString(GL_VERSION));
 

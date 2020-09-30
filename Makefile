@@ -10,7 +10,7 @@ PREFIX  = arm-dolce-eabi
 CC      = $(PREFIX)-gcc
 CXX		= $(PREFIX)-g++
 AR      = $(PREFIX)-gcc-ar
-CFLAGS  = -g -Wl,-q -O3 -ffast-math -mtune=cortex-a9 -mfpu=neon -ftree-vectorize -DVITA -DDEBUG -DRW_GL3 -DRW_GLES2 -DLIBRW_SDL2
+CFLAGS  = -g -Wl,-q -O3 -ffast-math -mtune=cortex-a9 -mfpu=neon -ftree-vectorize -DVITA -DDEBUG -DRW_GL3 -DRW_GLES2 -DGLFW_INCLUDE_ES2
 CXXFLAGS = $(CFLAGS)
 ASFLAGS = $(CFLAGS)
 
