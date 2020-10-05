@@ -1346,7 +1346,7 @@ addVideoMode(const GLFWvidmode *mode)
 
 static void
 makeVideoModeList(void)
-#ifndef __SWITCH__
+#ifndef VITA
 {
 	int i, num;
 	const GLFWvidmode *modes;
@@ -1373,27 +1373,19 @@ makeVideoModeList(void)
 #else
 // stub video modes manually: 1080p and 720p
 {
-	glGlobals.modes = rwNewT(DisplayMode, 2, ID_DRIVER | MEMDUR_EVENT);
+	glGlobals.modes = rwNewT(DisplayMode, 1, ID_DRIVER | MEMDUR_EVENT);
 
 	glGlobals.modes[0].mode.redBits = 8;
 	glGlobals.modes[0].mode.greenBits = 8;
 	glGlobals.modes[0].mode.blueBits = 8;
-	glGlobals.modes[0].mode.width = 1280;
-	glGlobals.modes[0].mode.height = 720;
+	glGlobals.modes[0].mode.width = 960;
+	glGlobals.modes[0].mode.height = 544;
 	glGlobals.modes[0].mode.refreshRate = 60;
 	glGlobals.modes[0].depth = 32;
 	glGlobals.modes[0].flags = VIDEOMODEEXCLUSIVE;
 
-	glGlobals.modes[1].mode.redBits = 8;
-	glGlobals.modes[1].mode.greenBits = 8;
-	glGlobals.modes[1].mode.blueBits = 8;
-	glGlobals.modes[1].mode.width = 1920;
-	glGlobals.modes[1].mode.height = 1080;
-	glGlobals.modes[1].mode.refreshRate = 60;
-	glGlobals.modes[1].depth = 32;
-	glGlobals.modes[1].flags = VIDEOMODEEXCLUSIVE;
+	glGlobals.numModes = 1;
 
-	glGlobals.numModes = 2;
 }
 #endif
 
@@ -1427,7 +1419,7 @@ openGLFW(EngineOpenParams *openparams)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif
 
-	#ifndef __SWITCH__
+	#ifndef VITA
 	glGlobals.monitor = glfwGetMonitors(&glGlobals.numMonitors)[0];
 	#else
 	glGlobals.monitor = glfwGetPrimaryMonitor();
@@ -1686,12 +1678,12 @@ deviceSystemGLFW(DeviceReq req, void *arg, int32 n)
 		return glGlobals.currentMonitor;
 
 	case DEVICESETSUBSYSTEM:
-		#ifndef __SWITCH__
+		#ifndef VITA
 		monitors = glfwGetMonitors(&glGlobals.numMonitors);
 		#endif
 		if(n >= glGlobals.numMonitors)
 			return 0;
-		#ifndef __SWITCH__
+		#ifndef VITA
 		glGlobals.currentMonitor = n;
 		glGlobals.monitor = monitors[glGlobals.currentMonitor];
 		#else
@@ -1701,15 +1693,15 @@ deviceSystemGLFW(DeviceReq req, void *arg, int32 n)
 		return 1;
 
 	case DEVICEGETSUBSSYSTEMINFO:
-		#ifndef __SWITCH__
+		#ifndef VITA
 		monitors = glfwGetMonitors(&glGlobals.numMonitors);
 		#endif
 		if(n >= glGlobals.numMonitors)
 			return 0;
-		#ifndef __SWITCH__
+		#ifndef VITA
 		strncpy(((SubSystemInfo*)arg)->name, glfwGetMonitorName(monitors[n]), sizeof(SubSystemInfo::name));
 		#else
-		strncpy(((SubSystemInfo*)arg)->name, "Nintendo Switch Screen Stub", sizeof(SubSystemInfo::name));
+		strncpy(((SubSystemInfo*)arg)->name, "Playstation Vita Screen Stub", sizeof(SubSystemInfo::name));
 		#endif
 		return 1;
 
