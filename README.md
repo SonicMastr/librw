@@ -3,6 +3,8 @@ librw-Vita
 
 librw Vita port using the NX port as a base
 
+Disclaimer: Yes, Rinne. I forked, converted shaders, and built first. Also gave credit :)
+
 This library is supposed to be a re-implementation of RenderWare graphics,
 or a good part of it anyway.
 
