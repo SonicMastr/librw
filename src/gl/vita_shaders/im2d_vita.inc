@@ -1,6 +1,6 @@
 const char *im2d_vert_src =
 "void main(\n"
-"	float3 in_pos,\n"
+"	float4 in_pos,\n"
 "	float4 in_color,\n"
 "	float2 in_tex0,\n"
 "	out float4 gl_Position : POSITION,\n"

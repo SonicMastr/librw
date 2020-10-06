@@ -1,5 +1,5 @@
 void main(
-	float3 in_pos,
+	float4 in_pos,
 	float4 in_color,
 	float2 in_tex0,
 	out float4 gl_Position : POSITION,
