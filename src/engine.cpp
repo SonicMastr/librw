@@ -273,13 +273,13 @@ Engine::start(void)
 	}
 
 	engine->device.system(DEVICEINIT, nil, 0);
-
+	printf("Initialized device\n");
 	Engine::s_plglist.construct(engine);
 	for(uint i = 0; i < NUM_PLATFORMS; i++)
 		Driver::s_plglist[i].construct(rw::engine->driver[i]);
 
 	engine->device.system(DEVICEFINALIZE, nil, 0);
-
+	printf("Finalized\n");
 	// Register some image formats. Or should we leave that to the user?
 	Image::registerFileFormat("tga", readTGA, writeTGA);
 	Image::registerFileFormat("bmp", readBMP, writeBMP);

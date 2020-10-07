@@ -468,6 +468,7 @@ Texture::streamReadNative(Stream *stream)
 		return nil;
 	}
 	uint32 platform = stream->readU32();
+	printf("Platform Stream Read: %d\n", platform);
 	stream->seek(-16);
 	if(platform == FOURCC_PS2)
 		return ps2::readNativeTexture(stream);

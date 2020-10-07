@@ -294,7 +294,11 @@ skinOpen(void *o, int32, int32)
 {
 	skinGlobals.pipelines[PLATFORM_GL3] = makeSkinPipeline();
 
-#ifdef RW_GLES2
+
+#if defined RW_GLES2 && defined VITA
+#include "vita_shaders/simple_fs_vita.inc"
+#include "vita_shaders/skin_vita.inc"
+#elif defined RW_GLES2
 #include "gl2_shaders/simple_fs_gl2.inc"
 #include "gl2_shaders/skin_gl2.inc"
 #else

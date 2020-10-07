@@ -111,11 +111,15 @@ compileshader(GLenum type, const char **src, GLuint *shader)
 	GLint len;
 	char *log;
 
-	for(n = 0; src[n]; n++);
-
+	for(n = 0; src[n]; n++)
+	{
+		printf("%s", src[n]);
+	}
+	
 	shdr = glCreateShader(type);
 	glShaderSource(shdr, n, src, nil);
 	glCompileShader(shdr);
+	printf("glCompileShader ended\n");
 	glGetShaderiv(shdr, GL_COMPILE_STATUS, &success);
 	if(!success){
 		printShaderSource(src);
@@ -171,6 +175,7 @@ linkprogram(GLint vs, GLint fs, GLuint *program)
 Shader*
 Shader::create(const char **vsrc, const char **fsrc)
 {
+	printf("Creating Shader.\n");
 	GLuint vs, fs, program;
 	int i;
 	int fail;
@@ -191,10 +196,14 @@ Shader::create(const char **vsrc, const char **fsrc)
 		glDeleteShader(vs);
 		return nil;
 	}
-	glDeleteProgram(vs);
-	glDeleteProgram(fs);
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+
+	printf("Deleted Shaders\n");
 
 	Shader *sh = rwNewT(Shader, 1, MEMDUR_EVENT | ID_DRIVER);	 // or global?
+
+	printf("Created RW shader object\n");
 
 #ifdef xxxRW_GLES2
 	int numUniforms;
@@ -239,6 +248,7 @@ Shader::create(const char **vsrc, const char **fsrc)
 	for(i = 0; i < uniformRegistry.numUniforms; i++)
 		sh->uniformLocations[i] = glGetUniformLocation(program,
 			uniformRegistry.uniformNames[i]);
+	printf("Queries Locations\n");
 
 	// set samplers
 	glUseProgram(program);
@@ -249,10 +259,12 @@ Shader::create(const char **vsrc, const char **fsrc)
 		loc = glGetUniformLocation(program, name);
 		glUniform1i(loc, i);
 	}
-
+	printf("Set Samplers\n");
 	// reset program
 	if(currentShader)
 		glUseProgram(currentShader->program);
+
+	printf("Finished Entire Shader\n");
 
 	return sh;
 }

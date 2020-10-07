@@ -224,18 +224,21 @@ GL_RGB5
 Raster*
 rasterCreate(Raster *raster)
 {
+	printf("Called Raster Create\n");
 	if(raster->width == 0 || raster->height == 0){
 		raster->flags |= Raster::DONTALLOCATE;
 		raster->stride = 0;
 		return raster;
 	}
+	
 	if(raster->flags & Raster::DONTALLOCATE)
 		return raster;
-
+	printf("Passed checks\nType: %d\n", raster->type);
 	switch(raster->type){
 #ifdef RW_OPENGL
 	case Raster::NORMAL:
 	case Raster::TEXTURE:
+		printf("Let's go\n");
 		return rasterCreateTexture(raster);
 	case Raster::CAMERATEXTURE:
 		return rasterCreateCameraTexture(raster);

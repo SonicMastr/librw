@@ -523,6 +523,8 @@ readNativeTexture(Stream *stream)
 	stream->read8(tex->name, 32);
 	stream->read8(tex->mask, 32);
 
+	printf("Texture Name: %s\n", tex->name);
+
 	// Raster
 	uint32 format = stream->readU32();
 	bool32 hasAlpha = stream->readI32();

@@ -1454,15 +1454,21 @@ startGLFW(void)
 	mode = &glGlobals.modes[glGlobals.currentMode];
 
 	glfwSetErrorCallback(glfwerr);
+#ifdef VITA
+	glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+#endif
 	glfwWindowHint(GLFW_RED_BITS, mode->mode.redBits);
 	glfwWindowHint(GLFW_GREEN_BITS, mode->mode.greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, mode->mode.blueBits);
-	glfwWindowHint(GLFW_REFRESH_RATE, mode->mode.refreshRate);
 
 	if(mode->flags & VIDEOMODEEXCLUSIVE)
-		win = glfwCreateWindow(mode->mode.width, mode->mode.height, glGlobals.winTitle, glGlobals.monitor, nil);
+		win = glfwCreateWindow(mode->mode.width, mode->mode.height, glGlobals.winTitle, nil, nil);
 	else
 		win = glfwCreateWindow(glGlobals.winWidth, glGlobals.winHeight, glGlobals.winTitle, nil, nil);
+		
 	if(win == nil){
 		RWERROR((ERR_GENERAL, "glfwCreateWindow() failed"));
 		return 0;
@@ -1599,8 +1605,8 @@ initOpenGL(void)
 #include "shaders/default_vs_gl3.inc"
 #include "shaders/simple_fs_gl3.inc"
 #endif
-	const char *vs[] = { shaderDecl, header_vert_src, default_vert_src, nil };
-	const char *fs[] = { shaderDecl, header_frag_src, simple_frag_src, nil };
+	const char *vs[] = { header_vert_src, default_vert_src, nil };
+	const char *fs[] = { header_frag_src, simple_frag_src, nil };
 	defaultShader = Shader::create(vs, fs);
 	assert(defaultShader);
 

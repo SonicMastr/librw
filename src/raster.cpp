@@ -74,7 +74,7 @@ Raster::create(int32 width, int32 height, int32 depth, int32 format, int32 platf
 	raster->pixels = raster->palette = nil;
 	s_plglist.construct(raster);
 
-//	printf("%d %d %d %d\n", raster->type, raster->width, raster->height, raster->depth);
+	printf("%d %d %d %d %d\n", raster->type, raster->width, raster->height, raster->depth, raster->platform);
 	return engine->driver[raster->platform]->rasterCreate(raster);
 }
 
