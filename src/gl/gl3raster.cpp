@@ -42,12 +42,12 @@ rasterCreateTexture(Raster *raster)
 		raster->depth = 24;
 		break;
 	case Raster::C1555:
-		natras->internalFormat = GL_RGB5_A1;
+		natras->internalFormat = GL_RGBA;
 		natras->format = GL_RGBA;
 		natras->type = GL_UNSIGNED_SHORT_5_5_5_1;
 		natras->hasAlpha = 1;
 		natras->bpp = 2;
-		raster->depth = 16;
+		raster->depth = 32;
 		break;
 	default:
 		RWERROR((ERR_INVRASTER));
@@ -104,7 +104,7 @@ rasterCreateCameraTexture(Raster *raster)
 		natras->bpp = 3;
 		break;
 	case Raster::C1555:
-		natras->internalFormat = GL_RGB5_A1;
+		natras->internalFormat = GL_RGBA;
 		natras->format = GL_RGBA;
 		natras->type = GL_UNSIGNED_SHORT_5_5_5_1;
 		natras->hasAlpha = 1;
@@ -114,10 +114,10 @@ rasterCreateCameraTexture(Raster *raster)
 
 #ifdef RW_GLES
 	// glReadPixels only supports GL_RGBA
-//	natras->internalFormat = GL_RGBA8;
-//	natras->format = GL_RGBA;
-//	natras->type = GL_UNSIGNED_BYTE;
-//	natras->bpp = 4;
+	natras->internalFormat = GL_RGBA;
+	natras->format = GL_RGBA;
+	natras->type = GL_UNSIGNED_BYTE;
+	natras->bpp = 4;
 #endif
 
 	raster->stride = raster->width*natras->bpp;
@@ -172,23 +172,23 @@ rasterCreateZbuffer(Raster *raster)
 	raster->stride = 0;
 	raster->pixels = nil;
 
-	natras->internalFormat = GL_DEPTH_COMPONENT;
-	natras->format = GL_DEPTH_COMPONENT;
-	natras->type = GL_UNSIGNED_BYTE;
+	// natras->internalFormat = GL_DEPTH_COMPONENT;
+	// natras->format = GL_DEPTH_COMPONENT;
+	// natras->type = GL_UNSIGNED_BYTE;
 
-	glGenTextures(1, &natras->texid);
-	uint32 prev = bindTexture(natras->texid);
-	glTexImage2D(GL_TEXTURE_2D, 0, natras->internalFormat,
-	             raster->width, raster->height,
-	             0, natras->format, natras->type, nil);
-	natras->filterMode = 0;
-	natras->addressU = 0;
-	natras->addressV = 0;
+	// glGenTextures(1, &natras->texid);
+	// uint32 prev = bindTexture(natras->texid);
+	// glTexImage2D(GL_TEXTURE_2D, 0, natras->internalFormat,
+	//              raster->width, raster->height,
+	//              0, natras->format, natras->type, nil);
+	// natras->filterMode = 0;
+	// natras->addressU = 0;
+	// natras->addressV = 0;
 
-	bindTexture(prev);
+	// bindTexture(prev);
 
-	natras->fbo = 0;
-	natras->fboMate = nil;
+	// natras->fbo = 0;
+	// natras->fboMate = nil;
 
 	return raster;
 }
@@ -224,7 +224,6 @@ GL_RGB5
 Raster*
 rasterCreate(Raster *raster)
 {
-	printf("Called Raster Create\n");
 	if(raster->width == 0 || raster->height == 0){
 		raster->flags |= Raster::DONTALLOCATE;
 		raster->stride = 0;
@@ -233,12 +232,10 @@ rasterCreate(Raster *raster)
 	
 	if(raster->flags & Raster::DONTALLOCATE)
 		return raster;
-	printf("Passed checks\nType: %d\n", raster->type);
 	switch(raster->type){
 #ifdef RW_OPENGL
 	case Raster::NORMAL:
 	case Raster::TEXTURE:
-		printf("Let's go\n");
 		return rasterCreateTexture(raster);
 	case Raster::CAMERATEXTURE:
 		return rasterCreateCameraTexture(raster);
@@ -282,7 +279,7 @@ GLenum e;
 			e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 assert(natras->format == GL_RGBA);
 			glReadPixels(0, 0, raster->width, raster->height, natras->format, natras->type, px);
-//e = glGetError(); printf("GL err4 %x (%x)\n", e, natras->format);
+//e = glGetError(); sceClibPrintf("GL err4 %x (%x)\n", e, natras->format);
 			bindFramebuffer(0);
 			glDeleteFramebuffers(1, &fbo);
 #else

@@ -22,7 +22,7 @@ void main(
 	}
 
 	float4 V = mul(u_world, float4(SkinVertex, 1.0));
-	gl_Position = mul(mul(u_proj, u_view), V);
+	gl_Position = mul(u_proj, mul(u_view, V));
 	float3 N = mul(float3x3(u_world), SkinNormal);
 
 	v_tex0 = in_tex0;

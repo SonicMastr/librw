@@ -3,8 +3,9 @@ TARGET          := librw
 SOURCES         := src src/d3d src/gl src/lodepng src/ps2
 
 CFILES   := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.c))
+ASMFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.S))
 CPPFILES :=	$(foreach dir,$(SOURCES), $(wildcard $(dir)/*.cpp))
-OBJS     := $(CFILES:.c=.o) $(CPPFILES:.cpp=.o)
+OBJS     := $(CFILES:.c=.o) $(ASMFILES:.S=.o) $(CPPFILES:.cpp=.o)
 
 PREFIX  = arm-dolce-eabi
 CC      = $(PREFIX)-gcc
@@ -20,13 +21,21 @@ $(TARGET).a: $(OBJS)
 	$(AR) -rc $@ $^
 	
 clean:
-	@rm -rf $(TARGET).a $(OBJS) rwfixed.h
+	@rm -rf $(TARGET).a $(OBJS)
 	
 install: $(TARGET).a
 	@mkdir -p $(DOLCESDK)/$(PREFIX)/lib/
 	cp $(TARGET).a $(DOLCESDK)/$(PREFIX)/lib/
-	@sed 's/src/rw/g' rw.h > rwfixed.h
 	@mkdir -p $(DOLCESDK)/$(PREFIX)/include/
-	cp rwfixed.h $(DOLCESDK)/$(PREFIX)/include/rw.h
-	@mkdir -p $(DOLCESDK)/$(PREFIX)/include/rw/
-	cp -r include/* $(DOLCESDK)/$(PREFIX)/include/rw/
+	cp *.h $(DOLCESDK)/$(PREFIX)/include/
+	@mkdir -p $(DOLCESDK)/$(PREFIX)/include/src
+	cp src/*.h $(DOLCESDK)/$(PREFIX)/include/src/
+	cp src/base.err $(DOLCESDK)/$(PREFIX)/include/src/
+	@mkdir -p $(DOLCESDK)/$(PREFIX)/include/src/d3d
+	@mkdir -p $(DOLCESDK)/$(PREFIX)/include/src/gl
+	@mkdir -p $(DOLCESDK)/$(PREFIX)/include/src/lodepng
+	@mkdir -p $(DOLCESDK)/$(PREFIX)/include/src/ps2
+	cp src/d3d/*.h $(DOLCESDK)/$(PREFIX)/include/src/d3d/
+	cp src/gl/*.h $(DOLCESDK)/$(PREFIX)/include/src/gl/
+	cp src/lodepng/lodepng.h $(DOLCESDK)/$(PREFIX)/include/src/lodepng/
+	cp src/ps2/*.h $(DOLCESDK)/$(PREFIX)/include/src/ps2/

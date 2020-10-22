@@ -23,7 +23,7 @@ const char *skin_vert_src =
 "	}\n"
 
 "	float4 V = mul(u_world, float4(SkinVertex, 1.0));\n"
-"	gl_Position = mul(mul(u_proj, u_view), V);\n"
+"	gl_Position = mul(u_proj, mul(u_view, V));\n"
 "	float3 N = mul(float3x3(u_world), SkinNormal);\n"
 
 "	v_tex0 = in_tex0;\n"

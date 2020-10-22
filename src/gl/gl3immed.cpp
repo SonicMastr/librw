@@ -143,9 +143,8 @@ im2DRenderPrimitive(PrimitiveType primType, void *vertices, int32 numVertices)
 	setAttribPointers(im2dattribDesc, 3);
 #endif
 
-	glUniform4fv(currentShader->uniformLocations[u_xform], 1, xform);
-
 	flushCache();
+	glUniform4fv(currentShader->uniformLocations[u_xform], 1, xform);
 	glDrawArrays(primTypeMap[primType], 0, numVertices);
 #ifndef RW_GL_USE_VAOS
 	disableAttribPointers(im2dattribDesc, 3);
@@ -186,9 +185,8 @@ im2DRenderIndexedPrimitive(PrimitiveType primType,
 	setAttribPointers(im2dattribDesc, 3);
 #endif
 
-	glUniform4fv(currentShader->uniformLocations[u_xform], 1, xform);
-
 	flushCache();
+	glUniform4fv(currentShader->uniformLocations[u_xform], 1, xform);
 	glDrawElements(primTypeMap[primType], numIndices,
 	               GL_UNSIGNED_SHORT, nil);
 #ifndef RW_GL_USE_VAOS
@@ -228,8 +226,8 @@ openIm3D(void)
 #include "shaders/im3d_gl3.inc"
 #include "shaders/simple_fs_gl3.inc"
 #endif
-	const char *vs[] = { shaderDecl, header_vert_src, im3d_vert_src, nil };
-	const char *fs[] = { shaderDecl, header_frag_src, simple_frag_src, nil };
+	const char *vs[] = { header_vert_src, im3d_vert_src, nil };
+	const char *fs[] = { header_frag_src, simple_frag_src, nil };
 	im3dShader = Shader::create(vs, fs);
 	assert(im3dShader);
 

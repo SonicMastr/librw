@@ -103,6 +103,8 @@ printShaderSource(const char **src)
 	}
 }
 
+char shader_source_buffer[16 * 1024];
+
 static int
 compileshader(GLenum type, const char **src, GLuint *shader)
 {
@@ -110,14 +112,17 @@ compileshader(GLenum type, const char **src, GLuint *shader)
 	GLint shdr, success;
 	GLint len;
 	char *log;
-
-	for(n = 0; src[n]; n++)
-	{
-		printf("%s", src[n]);
-	}
 	
+	shader_source_buffer[0] = 0;
+
+	for(n = 0; src[n]; n++) {
+		sprintf(shader_source_buffer, "%s%s", shader_source_buffer, src[n]);
+	}
+
+	const char *_src = (const char*)shader_source_buffer;
+
 	shdr = glCreateShader(type);
-	glShaderSource(shdr, n, src, nil);
+	glShaderSource(shdr, 1, &_src, nil);
 	glCompileShader(shdr);
 	printf("glCompileShader ended\n");
 	glGetShaderiv(shdr, GL_COMPILE_STATUS, &success);
@@ -145,6 +150,9 @@ linkprogram(GLint vs, GLint fs, GLuint *program)
 
 	prog = glCreateProgram();
 
+	glAttachShader(prog, vs);
+	glAttachShader(prog, fs);
+
 #ifdef RW_GLES2
 	// TODO: perhaps just do this always and get rid of the layout stuff?
 	glBindAttribLocation(prog, ATTRIB_POS, "in_pos");
@@ -155,8 +163,6 @@ linkprogram(GLint vs, GLint fs, GLuint *program)
 	glBindAttribLocation(prog, ATTRIB_INDICES, "in_indices");
 #endif
 
-	glAttachShader(prog, vs);
-	glAttachShader(prog, fs);
 	glLinkProgram(prog);
 	glGetProgramiv(prog, GL_LINK_STATUS, &success);
 	if(!success){
@@ -196,10 +202,6 @@ Shader::create(const char **vsrc, const char **fsrc)
 		glDeleteShader(vs);
 		return nil;
 	}
-	glDeleteShader(vs);
-	glDeleteShader(fs);
-
-	printf("Deleted Shaders\n");
 
 	Shader *sh = rwNewT(Shader, 1, MEMDUR_EVENT | ID_DRIVER);	 // or global?
 

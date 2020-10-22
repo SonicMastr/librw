@@ -2,6 +2,10 @@
     "files.associations": {
         "*.inc": "cpp",
         "utility": "cpp",
-        "*.err": "cpp"
+        "*.err": "cpp",
+        "atomic": "cpp",
+        "*.tcc": "cpp",
+        "fstream": "cpp",
+        "sstream": "cpp"
     }
 }
