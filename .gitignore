@@ -4,6 +4,7 @@
 /lib
 /output
 /.vs
+/.vscode
 librw.vcxproj.user
 librw.VC.db
 librw.VC.VC.opendb
