@@ -42,12 +42,12 @@ rasterCreateTexture(Raster *raster)
 		raster->depth = 24;
 		break;
 	case Raster::C1555:
-		natras->internalFormat = GL_RGBA;
+		natras->internalFormat = GL_RGB5_A1;
 		natras->format = GL_RGBA;
 		natras->type = GL_UNSIGNED_SHORT_5_5_5_1;
 		natras->hasAlpha = 1;
 		natras->bpp = 2;
-		raster->depth = 32;
+		raster->depth = 16;
 		break;
 	default:
 		RWERROR((ERR_INVRASTER));
@@ -104,7 +104,7 @@ rasterCreateCameraTexture(Raster *raster)
 		natras->bpp = 3;
 		break;
 	case Raster::C1555:
-		natras->internalFormat = GL_RGBA;
+		natras->internalFormat = GL_RGB5_A1;
 		natras->format = GL_RGBA;
 		natras->type = GL_UNSIGNED_SHORT_5_5_5_1;
 		natras->hasAlpha = 1;
@@ -114,10 +114,10 @@ rasterCreateCameraTexture(Raster *raster)
 
 #ifdef RW_GLES
 	// glReadPixels only supports GL_RGBA
-	natras->internalFormat = GL_RGBA;
-	natras->format = GL_RGBA;
-	natras->type = GL_UNSIGNED_BYTE;
-	natras->bpp = 4;
+//	natras->internalFormat = GL_RGBA8;
+//	natras->format = GL_RGBA;
+//	natras->type = GL_UNSIGNED_BYTE;
+//	natras->bpp = 4;
 #endif
 
 	raster->stride = raster->width*natras->bpp;
@@ -172,23 +172,23 @@ rasterCreateZbuffer(Raster *raster)
 	raster->stride = 0;
 	raster->pixels = nil;
 
-	// natras->internalFormat = GL_DEPTH_COMPONENT;
-	// natras->format = GL_DEPTH_COMPONENT;
-	// natras->type = GL_UNSIGNED_BYTE;
+	natras->internalFormat = GL_DEPTH_COMPONENT;
+	natras->format = GL_DEPTH_COMPONENT;
+	natras->type = GL_UNSIGNED_BYTE;
 
-	// glGenTextures(1, &natras->texid);
-	// uint32 prev = bindTexture(natras->texid);
-	// glTexImage2D(GL_TEXTURE_2D, 0, natras->internalFormat,
-	//              raster->width, raster->height,
-	//              0, natras->format, natras->type, nil);
-	// natras->filterMode = 0;
-	// natras->addressU = 0;
-	// natras->addressV = 0;
+	glGenTextures(1, &natras->texid);
+	uint32 prev = bindTexture(natras->texid);
+	glTexImage2D(GL_TEXTURE_2D, 0, natras->internalFormat,
+	             raster->width, raster->height,
+	             0, natras->format, natras->type, nil);
+	natras->filterMode = 0;
+	natras->addressU = 0;
+	natras->addressV = 0;
 
-	// bindTexture(prev);
+	bindTexture(prev);
 
-	// natras->fbo = 0;
-	// natras->fboMate = nil;
+	natras->fbo = 0;
+	natras->fboMate = nil;
 
 	return raster;
 }

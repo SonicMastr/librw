@@ -150,8 +150,6 @@ linkprogram(GLint vs, GLint fs, GLuint *program)
 
 	prog = glCreateProgram();
 
-	glAttachShader(prog, vs);
-	glAttachShader(prog, fs);
 
 #ifdef RW_GLES2
 	// TODO: perhaps just do this always and get rid of the layout stuff?
@@ -162,7 +160,8 @@ linkprogram(GLint vs, GLint fs, GLuint *program)
 	glBindAttribLocation(prog, ATTRIB_WEIGHTS, "in_weights");
 	glBindAttribLocation(prog, ATTRIB_INDICES, "in_indices");
 #endif
-
+	glAttachShader(prog, vs);
+	glAttachShader(prog, fs);
 	glLinkProgram(prog);
 	glGetProgramiv(prog, GL_LINK_STATUS, &success);
 	if(!success){

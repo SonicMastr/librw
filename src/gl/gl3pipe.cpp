@@ -203,6 +203,7 @@ defaultInstanceCB(Geometry *geo, InstanceDataHeader *header, bool32 reinstance)
 			stride += 12;
 			a++;
 		}
+		stride += 12;
 
 		// Prelighting
 		if(isPrelit){
@@ -214,6 +215,7 @@ defaultInstanceCB(Geometry *geo, InstanceDataHeader *header, bool32 reinstance)
 			stride += 4;
 			a++;
 		}
+		stride += 4;
 
 		// Texture coordinates
 		for(int32 n = 0; n < geo->numTexCoordSets; n++){

@@ -143,8 +143,8 @@ im2DRenderPrimitive(PrimitiveType primType, void *vertices, int32 numVertices)
 	setAttribPointers(im2dattribDesc, 3);
 #endif
 
-	flushCache();
 	glUniform4fv(currentShader->uniformLocations[u_xform], 1, xform);
+	flushCache();
 	glDrawArrays(primTypeMap[primType], 0, numVertices);
 #ifndef RW_GL_USE_VAOS
 	disableAttribPointers(im2dattribDesc, 3);
@@ -185,8 +185,8 @@ im2DRenderIndexedPrimitive(PrimitiveType primType,
 	setAttribPointers(im2dattribDesc, 3);
 #endif
 
-	flushCache();
 	glUniform4fv(currentShader->uniformLocations[u_xform], 1, xform);
+	flushCache();
 	glDrawElements(primTypeMap[primType], numIndices,
 	               GL_UNSIGNED_SHORT, nil);
 #ifndef RW_GL_USE_VAOS

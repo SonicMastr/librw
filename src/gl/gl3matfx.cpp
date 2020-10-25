@@ -104,10 +104,12 @@ matfxEnvRender(InstanceDataHeader *header, InstanceData *inst, MatFX::Env *env)
 	static float zero[4];
 	static float one[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	// This clamps the vertex color below. With it we can achieve both PC and PS2 style matfx
-	if(MatFX::modulateEnvMap)
+	if(MatFX::modulateEnvMap) {
 		glUniform4fv(U(u_colorClamp), 1, zero);
-	else
+	}
+	else {
 		glUniform4fv(U(u_colorClamp), 1, one);
+	}
 
 	rw::SetRenderState(VERTEXALPHA, 1);
 	rw::SetRenderState(SRCBLEND, BLENDONE);

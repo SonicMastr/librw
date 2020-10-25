@@ -936,14 +936,14 @@ flushCache(void)
 	if(objectDirty){
 		glUniformMatrix4fv(U(u_world), 1, 0, (float*)&uniformObject.world);
 		glUniform4fv(U(u_ambLight), 1, (float*)&uniformObject.ambLight);
-		glUniform4fv(U(u_lightParams), MAX_LIGHTS, (float*)uniformObject.lightParams);
-		glUniform4fv(U(u_lightPosition), MAX_LIGHTS, (float*)uniformObject.lightPosition);
-		glUniform4fv(U(u_lightDirection), MAX_LIGHTS, (float*)uniformObject.lightDirection);
-		glUniform4fv(U(u_lightColor), MAX_LIGHTS, (float*)uniformObject.lightColor);
-		objectDirty = 0;
+		//glUniform4fv(U(u_lightParams), MAX_LIGHTS, (float*)uniformObject.lightParams);
+		//glUniform4fv(U(u_lightPosition), MAX_LIGHTS, (float*)uniformObject.lightPosition);
+		//glUniform4fv(U(u_lightDirection), MAX_LIGHTS, (float*)uniformObject.lightDirection);
+		//glUniform4fv(U(u_lightColor), MAX_LIGHTS, (float*)uniformObject.lightColor);
+	objectDirty = 0;
 	}
 
-//	if(stateDirty){
+	if(stateDirty){
 
 		uniformState.fogDisable = rwStateCache.fogEnable ? 0.0f : 1.0f;
 		uniformState.fogStart = rwStateCache.fogStart;
@@ -987,8 +987,8 @@ flushCache(void)
 			uniformStateDirty[RWGL_FOGCOLOR] = false;
 		}
 
-//		stateDirty = 0;
-//	}
+		stateDirty = 0;
+	}
 #else
 	if(objectDirty){
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo_object);

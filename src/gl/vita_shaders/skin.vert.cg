@@ -5,33 +5,54 @@ void main(
 	float2 in_tex0,
 	float4 in_weights,
 	float4 in_indices,
-	out float4 v_color : COLOR,
+	out float4 v_color : COLOR0,
 	out float4 gl_Position : POSITION,
 	out float2 v_tex0 : TEXCOORD0,
 	out float v_fog : FOG,
+	uniform float4x4 u_proj,
+	uniform float4x4 u_world,
+	uniform float4x4 u_view,
+	uniform float4x4 u_texMatrix,
+	uniform float4 u_ambLight,
+	uniform float4 u_surfProps,
+	uniform float4 u_fogData,
+	uniform float4 u_matColor,
+	uniform float4 u_lightParams[MAX_LIGHTS],
+	uniform float4 u_lightDirection[MAX_LIGHTS],
+	uniform float4 u_lightColor[MAX_LIGHTS],
 	uniform float4x4 u_boneMatrices[64]
 )
 {
 	float3 SkinVertex = float3(0.0, 0.0, 0.0);
 	float3 SkinNormal = float3(0.0, 0.0, 0.0);
 	for(int i = 0; i < 4; i++){
-		float3 temp = mul(u_boneMatrices[int(in_indices[i])], float4(in_pos, 1.0)).xyz;
+		float3 temp = (mul(float4(in_pos, 1.0), u_boneMatrices[int(in_indices[i])])).xyz;
 		SkinVertex += temp * in_weights[i];
-		temp = mul(float3x3(u_boneMatrices[int(in_indices[i])]), in_normal);
+		temp = mul(in_normal, float3x3(u_boneMatrices[int(in_indices[i])]));
 		SkinNormal += temp * in_weights[i];
 	}
 
-	float4 V = mul(u_world, float4(SkinVertex, 1.0));
-	gl_Position = mul(u_proj, mul(u_view, V));
-	float3 N = mul(float3x3(u_world), SkinNormal);
+	float4 V = mul(float4(SkinVertex, 1.0), u_world);
+	gl_Position = mul(mul(V, u_view), u_proj);
+	float3 N = mul(SkinNormal, float3x3(u_world));
 
 	v_tex0 = in_tex0;
 
 	v_color = in_color;
 	v_color.rgb += u_ambLight.rgb*surfAmbient;
-	v_color.rgb += DoDynamicLight(V.xyz, N)*surfDiffuse;
+	float3 color = float3(0.0, 0.0, 0.0);
+	for(int i = 0; i < MAX_LIGHTS; i++){
+		if(u_lightParams[i].x == 0.0)
+			break;
+		if(u_lightParams[i].x == 1.0){
+			// direct
+			float l = max(0.0, dot(N, -u_lightDirection[i].xyz));
+			color += l*u_lightColor[i].rgb;
+		}
+	}
+	v_color.rgb += color;
 	v_color = clamp(v_color, 0.0, 1.0);
 	v_color *= u_matColor;
 
-	v_fog = DoFog(gl_Position.z);
+	v_fog = DoFog(gl_Position.z, u_fogData);
 }

@@ -1,46 +1,15 @@
-uniform float4  u_fogData;
-
-
 #define u_fogStart (u_fogData.x)
 #define u_fogEnd (u_fogData.y)
 #define u_fogRange (u_fogData.z)
 #define u_fogDisable (u_fogData.w)
 
-uniform float4x4 u_proj;
-uniform float4x4 u_view;
-
 #define MAX_LIGHTS 8
-
-uniform float4x4 u_world;
-uniform float4 u_ambLight;
-uniform float4 u_lightParams[MAX_LIGHTS];
-uniform float4 u_lightPosition[MAX_LIGHTS];
-uniform float4 u_lightDirection[MAX_LIGHTS];
-uniform float4 u_lightColor[MAX_LIGHTS];
-
-uniform float4 u_matColor;
-uniform float4 u_surfProps;	// amb, spec, diff, extra
 
 #define surfAmbient (u_surfProps.x)
 #define surfSpecular (u_surfProps.y)
 #define surfDiffuse (u_surfProps.z)
 
-float3 DoDynamicLight(float3 V, float3 N)
-{
-	float3 color = float3(0.0, 0.0, 0.0);
-	for(int i = 0; i < MAX_LIGHTS; i++){
-		if(u_lightParams[i].x == 0.0)
-			break;
-		if(u_lightParams[i].x == 1.0){
-			// direct
-			float l = max(0.0, dot(N, -u_lightDirection[i].xyz));
-			color += l*u_lightColor[i].rgb;
-		}
-	}
-	return color;
-}
-
-float DoFog(float w)
+float DoFog(float w, float4 u_fogData)
 {
 	return clamp((w - u_fogEnd)*u_fogRange, u_fogDisable, 1.0);
 }
