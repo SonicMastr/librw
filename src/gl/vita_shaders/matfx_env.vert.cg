@@ -40,7 +40,7 @@ void main(
 			color += l*u_lightColor[i].rgb;
 		}
 	}
-	v_color.rgb += color;
+	v_color.rgb += color*surfDiffuse;
 	v_color = clamp(v_color, 0.0, 1.0);
 	v_color *= u_matColor;
 

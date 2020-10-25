@@ -36,7 +36,7 @@ const char *default_vert_src =
 "			color += l*u_lightColor[i].rgb;\n"
 "		}\n"
 "	}\n"
-"	v_color.rgb += color;\n"
+"	v_color.rgb += color*surfDiffuse;\n"
 "	v_color = clamp(v_color, 0.0, 1.0);\n"
 "	v_color *= u_matColor;\n"
 
